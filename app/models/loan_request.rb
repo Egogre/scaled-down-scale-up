@@ -11,13 +11,14 @@ class LoanRequest < ActiveRecord::Base
   enum status: %w(active funded)
   enum repayment_rate: %w(monthly weekly)
   before_create :assign_default_image
+  attr_reader :owner, :repayment_begin
 
   def assign_default_image
     self.image_url = DefaultImages.random if self.image_url.to_s.empty?
   end
 
   def owner
-    self.user.name
+    @owner ||= self.user.name
   end
 
   def requested_by
@@ -29,7 +30,7 @@ class LoanRequest < ActiveRecord::Base
   end
 
   def repayment_begin
-    self.repayment_begin_date.strftime("%B %d, %Y")
+    @repayment_begin ||= self.repayment_begin_date.strftime("%B %d, %Y")
   end
 
   def funding_remaining
@@ -81,6 +82,6 @@ class LoanRequest < ActiveRecord::Base
   end
 
   def related_projects
-    (categories.flat_map(&:loan_requests) - [self]).shuffle.take(4)
+    categories[0].loan_requests.limit(4)
   end
 end
