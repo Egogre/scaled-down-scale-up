@@ -46,13 +46,14 @@ module LoadScript
     end
 
     def actions
-      [:browse_loan_requests]
+      [:browse_loan_requests, :log_in, :log_out, :sign_up_as_lender]
+
     end
 
     def log_in(email="demo+horace@jumpstartlab.com", pw="password")
       log_out
       session.visit host
-      session.click_link("Log In")
+      session.click_link("Login")
       session.fill_in("email_address", with: email)
       session.fill_in("password", with: pw)
       session.click_link_or_button("Login")
